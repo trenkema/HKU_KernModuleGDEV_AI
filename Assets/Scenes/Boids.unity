@@ -581,11 +581,11 @@ MonoBehaviour:
   _cohesionDistance: 2
   _avoidanceDistance: 3
   _alignmentDistance: 2
-  _obstacleDistance: 10
+  _obstacleDistance: 2
   _boundsDistance: 10
-  _cohesionWeight: 1
-  _avoidanceWeight: 1
-  _alignmentWeight: 1
+  _cohesionWeight: 2
+  _avoidanceWeight: 2
+  _alignmentWeight: 2
   _obstacleWeight: 100
   _boundsWeight: 10
 --- !u!4 &579434597
@@ -1097,18 +1097,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   flockUnityPrefab: {fileID: -4735041745026712527, guid: a4cb01648c9cd1341953d339a1ff5315, type: 3}
-  flockSize: 50
+  flockSize: 25
   spawnBounds: {x: 10, y: 5, z: 10}
   _minSpeed: 2
   _maxSpeed: 3
   _cohesionDistance: 2
   _avoidanceDistance: 3
   _alignmentDistance: 2
-  _obstacleDistance: 10
+  _obstacleDistance: 2
   _boundsDistance: 10
-  _cohesionWeight: 1
-  _avoidanceWeight: 1
-  _alignmentWeight: 1
+  _cohesionWeight: 2
+  _avoidanceWeight: 2
+  _alignmentWeight: 2
   _obstacleWeight: 100
   _boundsWeight: 10
 --- !u!4 &1636491176

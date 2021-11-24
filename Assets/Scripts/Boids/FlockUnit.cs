@@ -2,12 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FlockUnit : MonoBehaviour
+public class FlockUnit : MonoBehaviour, IDamageable
 {
+    [SerializeField] float maxHealth;
+    float currentHealth;
+
+    [SerializeField] Explosion explosionScript;
+
     [SerializeField] float FOV;
     [SerializeField] float smoothDamp;
     [SerializeField] LayerMask obstacleLayer;
-    [SerializeField] Vector3[] directionsToCheckWhenAvoidingObstacles;
 
     List<FlockUnit> cohesionNeighbours = new List<FlockUnit>();
     List<FlockUnit> avoidanceNeighbours = new List<FlockUnit>();
@@ -16,7 +20,6 @@ public class FlockUnit : MonoBehaviour
     Flock assignedFlock;
 
     Vector3 currentVelocity;
-    Vector3 currentObstacleAvoidanceVector;
     float speed;
 
     public Transform myTransform { get; private set; }
@@ -24,6 +27,8 @@ public class FlockUnit : MonoBehaviour
     private void Awake()
     {
         myTransform = transform;
+
+        currentHealth = maxHealth;
     }
 
     public void AssignFlock(Flock _flock)
@@ -190,59 +195,42 @@ public class FlockUnit : MonoBehaviour
 
         if (Physics.Raycast(myTransform.position, myTransform.forward, out hit, assignedFlock.obstacleDistance, obstacleLayer))
         {
-            obstacleVector = FindBestDirectionToAvoidObstacle();
+            obstacleVector = Vector3.Reflect(myTransform.forward, hit.normal);
         }
         else
         {
-            currentObstacleAvoidanceVector = Vector3.zero;
+            obstacleVector = Vector3.zero;
         }
 
         return obstacleVector;
     }
 
-    private Vector3 FindBestDirectionToAvoidObstacle()
-    {
-        if (currentObstacleAvoidanceVector != Vector3.zero)
-        {
-            RaycastHit hit;
-
-            if (!Physics.Raycast(myTransform.position, myTransform.forward, out hit, assignedFlock.obstacleDistance, obstacleLayer))
-            {
-                return currentObstacleAvoidanceVector;
-            }
-        }
-
-        float maxDistance = int.MinValue;
-        var selectedDirection = Vector3.zero;
-
-        for (int i = 0; i < directionsToCheckWhenAvoidingObstacles.Length; i++)
-        {
-            RaycastHit hit;
-            var currentDirection = myTransform.TransformDirection(directionsToCheckWhenAvoidingObstacles[i].normalized);
-
-            if (Physics.Raycast(myTransform.position, currentDirection, out hit, assignedFlock.obstacleDistance, obstacleLayer))
-            {
-                float currentDistance = (hit.point - myTransform.position).sqrMagnitude;
-
-                if (currentDistance > maxDistance)
-                {
-                    maxDistance = currentDistance;
-                    selectedDirection = currentDirection;
-                }
-                else
-                {
-                    selectedDirection = currentDirection;
-                    currentObstacleAvoidanceVector = currentDirection.normalized;
-                    return selectedDirection.normalized;
-                }
-            }
-        }
-
-        return selectedDirection.normalized;
-    }
-
     private bool IsInFOV(Vector3 _position)
     {
         return Vector3.Angle(myTransform.forward, _position - myTransform.position) <= FOV;
+    }
+
+    public void TakeDamage(float _damage)
+    {
+        currentHealth -= _damage;
+
+        if (currentHealth <= 0)
+        {
+            Die();
+        }
+    }
+
+    public void TakeFullDamage()
+    {
+        Debug.Log("Died");
+
+        Die();
+    }
+
+    private void Die()
+    {
+        explosionScript.Explode();
+        assignedFlock.allUnits.Remove(this);
+        Destroy(gameObject);
     }
 }
