@@ -14,10 +14,10 @@ TagManager:
   - Obstacle
   - Venomous
   - NonVenemous
-  - 
-  - 
-  - 
-  - 
+  - Player
+  - Pickupable
+  - Guard
+  - BlockSight
   - 
   - 
   - 
