@@ -28,7 +28,7 @@ public class CheckSightBlocked : Node
                 ClearData("Target");
         }
 
-        if (target != null)
+        if (target != null && !guardBT.isPickingup)
         {
             Collider[] colliders = Physics.OverlapSphere(ownTransform.position, 1f, blockedSightLayer, QueryTriggerInteraction.Collide);
 

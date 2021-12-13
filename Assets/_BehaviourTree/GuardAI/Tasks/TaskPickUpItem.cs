@@ -5,6 +5,8 @@ using BehaviourTree;
 
 public class TaskPickUpItem : Node
 {
+    private Transform ownTransform;
+
     private Animator animator;
 
     private float pickUpTime = 4f;
@@ -14,8 +16,9 @@ public class TaskPickUpItem : Node
     private GuardBT guardBT;
     private AttackManager attackManager;
 
-    public TaskPickUpItem(Animator _animator, GuardBT _guardBT, AttackManager _attackManager)
+    public TaskPickUpItem(Transform _ownTransform, Animator _animator, GuardBT _guardBT, AttackManager _attackManager)
     {
+        ownTransform = _ownTransform;
         animator = _animator;
         guardBT = _guardBT;
         attackManager = _attackManager;
@@ -58,7 +61,6 @@ public class TaskPickUpItem : Node
                     pickingUp = false;
                     guardBT.isPickingup = false;
 
-                    animator.SetBool("PickUp", false);
                     target.gameObject.SetActive(false);
 
                     if (target.GetComponent<Pickupable>()?.pickupType == pickupableTypes.Weapon)
@@ -81,10 +83,12 @@ public class TaskPickUpItem : Node
                 }
             }
 
-            if (guardBT.agent.remainingDistance <= 1.2f && !pickingUp)
+            if (Vector3.Distance(target.transform.position, ownTransform.position) < 1f && !pickingUp)
             {
                 guardBT.currentDecision = "Picking Up"; // Set Decision
-                animator.SetBool("PickUp", true);
+                animator.SetTrigger("PickUp");
+                animator.SetBool("Running", false);
+                animator.SetBool("Walking", false);
                 pickingUp = true;
                 guardBT.isPickingup = true;
             }

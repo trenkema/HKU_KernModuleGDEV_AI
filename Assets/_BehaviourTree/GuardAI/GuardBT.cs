@@ -94,7 +94,7 @@ public class GuardBT : BehaviourTree.Tree
                 new CheckEnemyInFOVRange(transform, headTransform, enemyLayer, obstructionLayer, this),
                 new CheckForItem(transform, headTransform, pickupableLayer, obstructionLayer, this, pickupableFindRange),
                 new TaskGoToItem(transform, animator, this),
-                new TaskPickUpItem(animator, this, attackManager),
+                new TaskPickUpItem(transform, animator, this, attackManager),
                 new TaskGoToTarget(transform, headTransform, animator, this),
             }),
             new TaskPatrol(transform, animator, waypoints, this),

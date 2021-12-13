@@ -57,10 +57,11 @@ public class CheckForItem : Node
 
                         if (!Physics.Raycast(headTransform.position, directionToTarget, distanceToTarget, obstructionLayer))
                         {
-                            if (closestItem.GetComponent<Pickupable>()?.pickupType == pickupableTypes.Useable)
+                            if (closestItem.GetComponent<Pickupable>()?.pickupType == pickupableTypes.Weapon)
                             {
                                 if (guardBT.hasWeapon || guardBT.foundWeapon)
                                 {
+                                    ClearData("Pickupable");
                                     state = NodeState.SUCCESS;
                                     return state;
                                 }
@@ -69,6 +70,7 @@ public class CheckForItem : Node
                             {
                                 if (guardBT.hasItem || guardBT.foundItem)
                                 {
+                                    ClearData("Pickupable");
                                     state = NodeState.SUCCESS;
                                     return state;
                                 }
