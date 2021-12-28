@@ -60,6 +60,8 @@ public class TaskAttack : Node
             return state;
         }
 
+        Debug.Log("Cant Attack");
+
         state = NodeState.FAILURE;
         return state;
     }

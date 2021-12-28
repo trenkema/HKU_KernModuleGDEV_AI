@@ -96,6 +96,8 @@ public class TaskPickUpItem : Node
             state = NodeState.RUNNING;
             return state;
         }
+
+        Debug.Log("Test4");
         
         state = NodeState.SUCCESS;
         return state;

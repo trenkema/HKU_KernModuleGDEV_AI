@@ -22,10 +22,13 @@ public class TaskGoToTarget : Node
     {
         Transform target = (Transform)GetData("Target");
 
-        if (!target.gameObject.activeInHierarchy)
+        if (target != null)
         {
-            animator.SetBool("Running", false);
-            ClearData("Target");
+            if (!target.gameObject.activeInHierarchy)
+            {
+                animator.SetBool("Running", false);
+                ClearData("Target");
+            }
         }
 
         if (target != null)

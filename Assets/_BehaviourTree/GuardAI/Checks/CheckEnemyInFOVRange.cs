@@ -25,6 +25,8 @@ public class CheckEnemyInFOVRange : Node
     {
         Transform target = (Transform)GetData("Target");
 
+        Debug.Log("Test");
+
         if (target == null)
         {
             Collider[] colliders = Physics.OverlapSphere(ownTransform.position, fovRange, enemyLayer, QueryTriggerInteraction.Ignore);

@@ -28,10 +28,13 @@ public class TaskGoToItem : Node
 
             if (pickupable != null)
             {
-                if (target.GetComponent<Player>())
+                if (target != null)
                 {
-                    target.GetComponent<Player>().beingAttackedBy = null;
-                    target.GetComponent<Player>().isBeingAttacked = false;
+                    if (target.GetComponent<Player>())
+                    {
+                        target.GetComponent<Player>().beingAttackedBy = null;
+                        target.GetComponent<Player>().isBeingAttacked = false;
+                    }
                 }
 
                 if (pickupable.GetComponent<Pickupable>()?.pickupType == pickupableTypes.Weapon)

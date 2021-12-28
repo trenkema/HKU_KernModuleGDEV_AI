@@ -26,8 +26,9 @@ public class CheckForItem : Node
     public override NodeState Evaluate()
     {
         Transform target = (Transform)GetData("Pickupable");
+        Transform target2 = (Transform)GetData("Target");
 
-        if (target == null)
+        if (target == null && target2 != null)
         {
             Collider[] colliders = Physics.OverlapSphere(ownTransform.position, itemFindRange, itemLayer);
 
@@ -95,6 +96,8 @@ public class CheckForItem : Node
                 }
             }
         }
+
+        Debug.Log("Test2");
 
         state = NodeState.SUCCESS;
         return state;

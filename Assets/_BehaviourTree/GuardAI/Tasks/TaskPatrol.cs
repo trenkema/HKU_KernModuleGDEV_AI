@@ -29,6 +29,8 @@ public class TaskPatrol : Node
     {
         if (!guardBT.isAttacking || guardBT.currentWeapon != null)
         {
+            Debug.Log("Patrolling");
+
             Transform target = (Transform)GetData("Target");
 
             if (target != null)
