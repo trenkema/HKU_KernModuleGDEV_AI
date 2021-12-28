@@ -8,6 +8,8 @@ namespace BehaviourTree
     {
         private Node root = null;
 
+        public string decision = "Idle";
+
         protected void Start()
         {
             root = SetupTree();

@@ -6,31 +6,53 @@ using TMPro;
 
 public class Player : MonoBehaviour, IDamageable
 {
-    public Transform Camera;
-    [SerializeField] private float rotationSpeed = 180f;
-    [SerializeField] private float moveSpeed = 3;
-    [SerializeField] private float deathForce = 1000;
-    [SerializeField] private GameObject ragdoll;
-    Rigidbody rb;
-    Animator animator;
-    float vert = 0;
-    float hor = 0;
-    Vector3 moveDirection;
-    Collider mainCollider;
+    [SerializeField] Transform Camera;
 
-    [SerializeField] TextMeshProUGUI healthText;
+    [Space(10)]
 
-    [SerializeField] float maxHealth;
-    float currentHealth;
-    GameObject attacker;
     public bool isBeingAttacked = false;
     public GameObject beingAttackedBy = null;
 
+    [Space(10)]
+
+    [SerializeField] float rotationSpeed = 180f;
+    [SerializeField] float moveSpeed = 3;
+    [SerializeField] float deathForce = 1000;
+    [SerializeField] GameObject ragdoll;
+
+    [SerializeField] LayerMask pickupableLayerMask;
+    [SerializeField] GameObject[] pickupablesSprites;
+    [SerializeField] GameObject[] pickupableDrops;
+    [SerializeField] Transform dropTransform;
+
+    [Space(10)]
+
+    [SerializeField] TextMeshProUGUI healthText;
+    [SerializeField] float maxHealth;
+    private float currentHealth;
+
+    private Rigidbody rb;
+    private Animator animator;
+    private float vert = 0;
+    private float hor = 0;
+    private Vector3 moveDirection;
+    private Collider mainCollider;
+    GameObject attacker;
+
+    private bool hasFood = false;
+    private int pickupableIndex = 0;
+
     void Start()
     {
-        currentHealth = maxHealth;
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
 
-        healthText.text = "+ " + currentHealth;
+        if (healthText != null)
+        {
+            currentHealth = maxHealth;
+
+            healthText.text = "+ " + currentHealth;
+        }
 
         rb = GetComponent<Rigidbody>();
         animator = GetComponentInChildren<Animator>();
@@ -55,8 +77,8 @@ public class Player : MonoBehaviour, IDamageable
 
     void Update()
     {
-        vert = Input.GetAxis("Vertical");
-        hor = Input.GetAxis("Horizontal");
+        vert = Input.GetAxisRaw("Vertical");
+        hor = Input.GetAxisRaw("Horizontal");
         Vector3 forwardDirection = Vector3.Scale(new Vector3(1, 0, 1), Camera.transform.forward);
         Vector3 rightDirection = Vector3.Cross(Vector3.up, forwardDirection.normalized);
         moveDirection = forwardDirection.normalized * vert + rightDirection.normalized * hor;
@@ -75,6 +97,18 @@ public class Player : MonoBehaviour, IDamageable
         else
         {
             animator.SetBool("Walking", false);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Q) && hasFood)
+        {
+            hasFood = false;
+            Instantiate(pickupableDrops[pickupableIndex], dropTransform.position, Quaternion.identity);
+            pickupableIndex = 0;
+
+            foreach (var sprite in pickupablesSprites)
+            {
+                sprite.SetActive(false);
+            }
         }
     }
 
@@ -119,5 +153,74 @@ public class Player : MonoBehaviour, IDamageable
         ragdoll.transform.SetParent(null);
 
         gameObject.SetActive(false);
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        if (Input.GetKey(KeyCode.E))
+        {
+            if (IsInLayerMask(other.gameObject, pickupableLayerMask) && !hasFood)
+            {
+                if (other.GetComponent<Pickupable>() != null)
+                {
+                    Pickupable pickupable = other.GetComponent<Pickupable>();
+
+                    if (pickupable.owner == null)
+                    {
+                        hasFood = true;
+
+                        foreach (var sprite in pickupablesSprites)
+                        {
+                            sprite.SetActive(false);
+                        }
+
+                        pickupableIndex = pickupable.itemIndex;
+                        pickupablesSprites[pickupableIndex].SetActive(true);
+
+                        Destroy(other.gameObject);
+                    }
+                }
+            }
+        }
+
+        if (IsInLayerMask(other.gameObject, pickupableLayerMask))
+        {
+            if (!hasFood)
+            {
+                if (other.GetComponent<Pickupable>() != null)
+                {
+                    Pickupable pickupable = other.GetComponent<Pickupable>();
+
+                    if (pickupable.owner == null)
+                    {
+                        other.GetComponent<Outline>().enabled = true;
+                    }
+                    else
+                    {
+                        other.GetComponent<Outline>().enabled = false;
+                    }
+                }
+            }
+            else
+            {
+                other.GetComponent<Outline>().enabled = false;
+            }
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (IsInLayerMask(other.gameObject, pickupableLayerMask))
+        {
+            if (other.GetComponent<Pickupable>() != null)
+            {
+                other.GetComponent<Outline>().enabled = false;
+            }
+        }
+    }
+
+    public bool IsInLayerMask(GameObject obj, LayerMask layerMask)
+    {
+        return ((layerMask.value & (1 << obj.layer)) > 0);
     }
 }

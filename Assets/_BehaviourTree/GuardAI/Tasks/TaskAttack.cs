@@ -42,7 +42,7 @@ public class TaskAttack : Node
 
                 guardBT.canAttack = false;
                 guardBT.isAttacking = true;
-                guardBT.currentDecision = "Attacking Enemy"; // Set Decision
+                guardBT.decision = "Attacking Enemy"; // Set Decision
 
                 if (guardBT.hasWeapon)
                     guardBT.currentWeapon.Attack();

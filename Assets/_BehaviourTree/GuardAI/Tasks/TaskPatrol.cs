@@ -29,13 +29,15 @@ public class TaskPatrol : Node
     {
         if (!guardBT.isAttacking || guardBT.currentWeapon != null)
         {
-            if (guardBT.target != null)
+            Transform target = (Transform)GetData("Target");
+
+            if (target != null)
             {
-                if (guardBT.target.GetComponent<Player>())
+                if (target.GetComponent<Player>() != null)
                 {
-                    guardBT.target.GetComponent<Player>().beingAttackedBy = null;
-                    guardBT.target.GetComponent<Player>().isBeingAttacked = false;
-                    guardBT.target = null;
+                    target.GetComponent<Player>().beingAttackedBy = null;
+                    target.GetComponent<Player>().isBeingAttacked = false;
+                    ClearData("Target");
                 }
             }
 
@@ -44,7 +46,7 @@ public class TaskPatrol : Node
                 guardBT.agent.speed = guardBT.walkSpeed;
                 guardBT.agent.SetDestination(ownTransform.position);
 
-                guardBT.currentDecision = "Waiting"; // Set Decision
+                guardBT.decision = "Waiting"; // Set Decision
 
                 waitCounter += Time.deltaTime;
 
@@ -72,7 +74,7 @@ public class TaskPatrol : Node
                 }
                 else
                 {
-                    guardBT.currentDecision = "Patrolling"; // Set Decision
+                    guardBT.decision = "Patrolling"; // Set Decision
 
                     guardBT.agent.speed = guardBT.walkSpeed;
                     guardBT.agent.SetDestination(wp.position);

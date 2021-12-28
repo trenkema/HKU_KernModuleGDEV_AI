@@ -53,7 +53,7 @@ public class TaskGoToItem : Node
 
                 if (guardBT.agent.remainingDistance > 1.2f)
                 {
-                    guardBT.currentDecision = "Going To Item"; // Set Decision
+                    guardBT.decision = "Going To Item"; // Set Decision
                     animator.SetBool("Running", true);
                     animator.SetBool("Walking", false);
 

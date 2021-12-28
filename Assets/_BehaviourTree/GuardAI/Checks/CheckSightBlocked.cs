@@ -45,7 +45,7 @@ public class CheckSightBlocked : Node
                 guardBT.isAttacking = false;
                 guardBT.sightBlocked = true;
                 guardBT.agent.isStopped = true;
-                guardBT.currentDecision = "Blinded"; // Set Decision
+                guardBT.decision = "Blinded"; // Set Decision
             }
             else
             {

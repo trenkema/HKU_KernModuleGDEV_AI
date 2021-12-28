@@ -85,7 +85,7 @@ public class TaskPickUpItem : Node
 
             if (Vector3.Distance(target.transform.position, ownTransform.position) < 1f && !pickingUp)
             {
-                guardBT.currentDecision = "Picking Up"; // Set Decision
+                guardBT.decision = "Picking Up"; // Set Decision
                 animator.SetTrigger("PickUp");
                 animator.SetBool("Running", false);
                 animator.SetBool("Walking", false);

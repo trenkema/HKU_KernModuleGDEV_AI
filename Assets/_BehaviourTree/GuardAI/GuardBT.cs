@@ -59,14 +59,10 @@ public class GuardBT : BehaviourTree.Tree
     public bool hasItem = false;
     public bool foundItem = false;
 
-    public string currentDecision = "Idle";
-    public string getDecision { get { return currentDecision; } }
-
     public bool canAttack = true;
     public bool isAttacking = false;
     public bool isPickingup = false;
     public bool sightBlocked = false;
-    public GameObject target;
 
     public bool hasSpeedUpgrade = false;
     public ParticleSystem speedUpgradeEffect;
@@ -91,14 +87,14 @@ public class GuardBT : BehaviourTree.Tree
             new Sequence(new List<Node>
             {
                 new CheckSightBlocked(transform, animator, blockedSightLayer, this),
-                new CheckEnemyInFOVRange(transform, headTransform, enemyLayer, obstructionLayer, this),
+                new CheckEnemyInFOVRange(transform, headTransform, enemyLayer, obstructionLayer, fovRange),
                 new CheckForItem(transform, headTransform, pickupableLayer, obstructionLayer, this, pickupableFindRange),
                 new TaskGoToItem(transform, animator, this),
                 new TaskPickUpItem(transform, animator, this, attackManager),
                 new TaskGoToTarget(transform, headTransform, animator, this),
             }),
             new TaskPatrol(transform, animator, waypoints, this),
-        });;
+        });
         
         return root;
     }

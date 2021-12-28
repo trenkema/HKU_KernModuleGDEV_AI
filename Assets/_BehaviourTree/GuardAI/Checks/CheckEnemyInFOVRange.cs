@@ -9,16 +9,16 @@ public class CheckEnemyInFOVRange : Node
     private Transform headTransform;
     private LayerMask enemyLayer;
     private LayerMask obstructionLayer;
-    private GuardBT guardBT;
     private float fovAngle = 90f;
+    private float fovRange = 0f;
 
-    public CheckEnemyInFOVRange(Transform _transform, Transform _headTransform, LayerMask _enemyLayer, LayerMask _obstructionLayer, GuardBT _guardBT)
+    public CheckEnemyInFOVRange(Transform _transform, Transform _headTransform, LayerMask _enemyLayer, LayerMask _obstructionLayer, float _fovRange)
     {
         ownTransform = _transform;
         headTransform = _headTransform;
         enemyLayer = _enemyLayer;
         obstructionLayer = _obstructionLayer;
-        guardBT = _guardBT;
+        fovRange = _fovRange;
     }
 
     public override NodeState Evaluate()
@@ -27,39 +27,25 @@ public class CheckEnemyInFOVRange : Node
 
         if (target == null)
         {
-            Collider[] colliders = Physics.OverlapSphere(ownTransform.position, guardBT.fovRange, enemyLayer, QueryTriggerInteraction.Ignore);
+            Collider[] colliders = Physics.OverlapSphere(ownTransform.position, fovRange, enemyLayer, QueryTriggerInteraction.Ignore);
 
             if (colliders.Length > 0)
             {
                 Vector3 directionToTarget = (colliders[0].transform.position - ownTransform.position).normalized;
-
+                
                 if (Vector3.Angle(ownTransform.forward, directionToTarget) < fovAngle / 2)
                 {
                     float distanceToTarget = Vector3.Distance(ownTransform.position, colliders[0].transform.position);
 
-                    if (!Physics.Raycast(headTransform.position, directionToTarget, distanceToTarget, obstructionLayer))
+                    if (!Physics.Raycast(headTransform.position, directionToTarget, distanceToTarget, obstructionLayer) && distanceToTarget < fovRange)
                     {
                         parent.parent.SetData("Target", colliders[0].transform);
-                        guardBT.target = colliders[0].gameObject;
 
                         state = NodeState.SUCCESS;
                         return state;
                     }
-                    else
-                    {
-                        state = NodeState.FAILURE;
-                        return state;
-                    }
-                }
-                else
-                {
-                    state = NodeState.FAILURE;
-                    return state;
                 }
             }
-
-            state = NodeState.FAILURE;
-            return state;
         }
         else if (target.gameObject.activeInHierarchy)
         {
@@ -69,7 +55,7 @@ public class CheckEnemyInFOVRange : Node
             {
                 float distanceToTarget = Vector3.Distance(ownTransform.position, target.position);
 
-                if (!Physics.Raycast(headTransform.position, directionToTarget2, distanceToTarget, obstructionLayer))
+                if (!Physics.Raycast(headTransform.position, directionToTarget2, distanceToTarget, obstructionLayer) && distanceToTarget < fovRange)
                 {
                     Debug.Log("Target Visible");
                     state = NodeState.SUCCESS;
@@ -79,7 +65,7 @@ public class CheckEnemyInFOVRange : Node
                 {
                     Debug.Log("Target Not Visible");
                     ClearData("Target");
-                    state = NodeState.FAILURE;
+                    state = NodeState.SUCCESS;
                     return state;
                 }
             }

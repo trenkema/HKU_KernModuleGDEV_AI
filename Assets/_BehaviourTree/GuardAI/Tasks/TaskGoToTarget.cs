@@ -42,7 +42,7 @@ public class TaskGoToTarget : Node
                     }
 
                     guardBT.agent.stoppingDistance = attackRange;
-                    guardBT.currentDecision = "Chasing Enemy"; // Set Decision
+                    guardBT.decision = "Chasing Enemy"; // Set Decision
 
                     animator.SetBool("Walking", false);
                     animator.SetBool("Running", true);
