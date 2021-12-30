@@ -23,6 +23,9 @@ public class Player : MonoBehaviour, IDamageable
     [SerializeField] LayerMask pickupableLayerMask;
     [SerializeField] GameObject[] pickupablesSprites;
     [SerializeField] GameObject[] pickupableDrops;
+
+    [SerializeField] GameObject dropText;
+
     [SerializeField] Transform dropTransform;
 
     [Space(10)]
@@ -42,11 +45,10 @@ public class Player : MonoBehaviour, IDamageable
     private bool hasFood = false;
     private int pickupableIndex = 0;
 
+    public bool hasStarted = false;
+
     void Start()
     {
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-
         if (healthText != null)
         {
             currentHealth = maxHealth;
@@ -58,6 +60,7 @@ public class Player : MonoBehaviour, IDamageable
         animator = GetComponentInChildren<Animator>();
         mainCollider = GetComponent<Collider>();
         var rigidBodies = GetComponentsInChildren<Rigidbody>();
+
         foreach (Rigidbody rib in rigidBodies)
         {
             rib.isKinematic = true;
@@ -65,51 +68,76 @@ public class Player : MonoBehaviour, IDamageable
         }
 
         var cols = GetComponentsInChildren<Collider>();
+
         foreach (Collider col in cols)
         {
             if (col.isTrigger) { continue; }
             col.enabled = false;
         }
+
         mainCollider.enabled = true;
         rb.isKinematic = false;
         rb.useGravity = true;
+
+        dropText.SetActive(false);
+
+        EventSystemNew.Subscribe(Event_Type.START_GAME, StartGame);
+        EventSystemNew.Subscribe(Event_Type.GAME_WON, EndGame);
+        EventSystemNew.Subscribe(Event_Type.GAME_LOST, EndGame);
     }
 
     void Update()
     {
-        vert = Input.GetAxisRaw("Vertical");
-        hor = Input.GetAxisRaw("Horizontal");
-        Vector3 forwardDirection = Vector3.Scale(new Vector3(1, 0, 1), Camera.transform.forward);
-        Vector3 rightDirection = Vector3.Cross(Vector3.up, forwardDirection.normalized);
-        moveDirection = forwardDirection.normalized * vert + rightDirection.normalized * hor;
-        if (moveDirection != Vector3.zero)
+        if (hasStarted)
         {
-            transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(moveDirection.normalized, Vector3.up), rotationSpeed * Time.deltaTime);
-        }
-        transform.position += moveDirection.normalized * moveSpeed * Time.deltaTime;
-
-        bool isMoving = hor != 0 || vert != 0;
-
-        if (isMoving)
-        {
-            animator.SetBool("Walking", true);
-        }
-        else
-        {
-            animator.SetBool("Walking", false);
-        }
-
-        if (Input.GetKeyDown(KeyCode.Q) && hasFood)
-        {
-            hasFood = false;
-            Instantiate(pickupableDrops[pickupableIndex], dropTransform.position, Quaternion.identity);
-            pickupableIndex = 0;
-
-            foreach (var sprite in pickupablesSprites)
+            vert = Input.GetAxisRaw("Vertical");
+            hor = Input.GetAxisRaw("Horizontal");
+            Vector3 forwardDirection = Vector3.Scale(new Vector3(1, 0, 1), Camera.transform.forward);
+            Vector3 rightDirection = Vector3.Cross(Vector3.up, forwardDirection.normalized);
+            moveDirection = forwardDirection.normalized * vert + rightDirection.normalized * hor;
+            if (moveDirection != Vector3.zero)
             {
-                sprite.SetActive(false);
+                transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(moveDirection.normalized, Vector3.up), rotationSpeed * Time.deltaTime);
+            }
+            transform.position += moveDirection.normalized * moveSpeed * Time.deltaTime;
+
+            bool isMoving = hor != 0 || vert != 0;
+
+            if (isMoving)
+            {
+                animator.SetBool("Walking", true);
+            }
+            else
+            {
+                animator.SetBool("Walking", false);
+            }
+
+            if (Input.GetKeyDown(KeyCode.Q) && hasFood)
+            {
+                hasFood = false;
+                Instantiate(pickupableDrops[pickupableIndex], dropTransform.position, Quaternion.identity);
+                pickupableIndex = 0;
+
+                foreach (var sprite in pickupablesSprites)
+                {
+                    sprite.SetActive(false);
+                }
+
+                dropText.SetActive(false);
             }
         }
+    }
+
+    private void StartGame()
+    {
+        hasStarted = true;
+    }
+
+    private void EndGame()
+    {
+        hasStarted = false;
+
+        animator.SetBool("Walking", false);
     }
 
     public void TakeDamage(float _damage, GameObject _attacker)
@@ -177,6 +205,8 @@ public class Player : MonoBehaviour, IDamageable
                         pickupableIndex = pickupable.itemIndex;
                         pickupablesSprites[pickupableIndex].SetActive(true);
 
+                        dropText.SetActive(true);
+
                         Destroy(other.gameObject);
                     }
                 }
@@ -193,17 +223,17 @@ public class Player : MonoBehaviour, IDamageable
 
                     if (pickupable.owner == null)
                     {
-                        other.GetComponent<Outline>().enabled = true;
+                        other.GetComponent<OutlineGameObject>().enabled = true;
                     }
                     else
                     {
-                        other.GetComponent<Outline>().enabled = false;
+                        other.GetComponent<OutlineGameObject>().enabled = false;
                     }
                 }
             }
             else
             {
-                other.GetComponent<Outline>().enabled = false;
+                other.GetComponent<OutlineGameObject>().enabled = false;
             }
         }
     }
@@ -214,7 +244,7 @@ public class Player : MonoBehaviour, IDamageable
         {
             if (other.GetComponent<Pickupable>() != null)
             {
-                other.GetComponent<Outline>().enabled = false;
+                other.GetComponent<OutlineGameObject>().enabled = false;
             }
         }
     }

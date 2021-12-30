@@ -22,6 +22,20 @@ public class CheckForHunger : Node
 
     public override NodeState Evaluate()
     {
+        if (!chickenBT.hasStarted)
+        {
+            ClearData("Target");
+            ClearData("Pickupable");
+
+            chickenBT.isPickingup = false;
+            chickenBT.isEating = false;
+            chickenBT.isHiding = false;
+            chickenBT.foundFood = false;
+
+            state = NodeState.FAILURE;
+            return state;
+        }
+
         if (!chickenBT.needFood)
         {
             needFoodTimer += Time.deltaTime;
@@ -34,13 +48,12 @@ public class CheckForHunger : Node
             }
         }
 
-        if (chickenBT.needFood && !chickenBT.beenFedThreeTimes)
+        if (chickenBT.needFood && !chickenBT.beenFedCompletely)
         {
             hungryTimer += Time.deltaTime;
 
             if (hungryTimer >= hungryDeathTime)
             {
-                EventSystemNew.RaiseEvent(Event_Type.CHICKEN_DIED);
                 chickenBT.ChickenDied();
             }
         }

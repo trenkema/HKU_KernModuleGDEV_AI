@@ -13,15 +13,16 @@ public class ChickenBT : BehaviourTree.Tree
 
     [Header("Bool Settings")]
     public bool needFood = false;
-    [HideInInspector] public bool isEating = false;
-    [HideInInspector] public bool foundFood = false;
-    [HideInInspector] public bool isPickingup = false;
-    [HideInInspector] public bool isHiding = false;
-    [HideInInspector] public bool resetWanderTimer = false;
+    /* [HideInInspector] */ public bool isEating = false;
+    /* [HideInInspector] */ public bool foundFood = false;
+    /* [HideInInspector] */ public bool isPickingup = false;
+    /* [HideInInspector] */ public bool isHiding = false;
+    /* [HideInInspector] */ public bool resetWanderTimer = false;
 
     [Space(10)]
 
     [Header("References")]
+    public DisplayDecision displayDecision;
     [SerializeField] Animator animator;
     [SerializeField] Transform headTransform;
     [SerializeField] LayerMask enemyLayer;
@@ -39,7 +40,10 @@ public class ChickenBT : BehaviourTree.Tree
     [SerializeField] float needFoodCooldown = 10f;
 
     [Range(0, 60f)]
-    [SerializeField] float hungryDeathTime = 30f;
+    [SerializeField] float hungryDeathTimeMin = 30f;
+    [Range(0, 60f)]
+    [SerializeField] float hungryDeathTimeMax = 30f;
+    private float hungryDeathTime = 0;
 
     [Space(5)]
 
@@ -81,12 +85,20 @@ public class ChickenBT : BehaviourTree.Tree
     [SerializeField] float setRunSpeed = 3.5f;
     public float runSpeed { get { return setRunSpeed; } }
 
-    public bool beenFedThreeTimes = false;
+    public bool beenFedCompletely = false;
+
+    public bool hasStarted = false;
     #endregion
 
     private void Awake()
     {
         agent.updateRotation = false;
+
+        hungryDeathTime = Random.Range(hungryDeathTimeMin, hungryDeathTimeMax);
+
+        EventSystemNew.Subscribe(Event_Type.START_GAME, StartGame);
+        EventSystemNew.Subscribe(Event_Type.GAME_LOST, EndGame);
+        EventSystemNew.Subscribe(Event_Type.GAME_WON, EndGame);
     }
 
     protected override Node SetupTree()
@@ -108,8 +120,19 @@ public class ChickenBT : BehaviourTree.Tree
         return root;
     }
 
+    private void StartGame()
+    {
+        hasStarted = true;
+    }
+
+    private void EndGame()
+    {
+        hasStarted = false;
+    }
+
     public void ChickenDied()
     {
+        EventSystemNew.RaiseEvent(Event_Type.CHICKEN_DIED);
         Destroy(gameObject);
     }
 }

@@ -43,8 +43,6 @@ public class TaskHide : Node
         Transform pickupable = (Transform)GetData("Pickupable");
         Transform target = (Transform)GetData("Target");
 
-        Debug.Log("FindCoverRadius: " + findCoverRadius);
-
         if (target != null && !chickenBT.isPickingup)
         {
             if (pickupable != null)
@@ -98,7 +96,7 @@ public class TaskHide : Node
                         {
                             Debug.Log("Found Cover: " + coverLocation);
                             chickenBT.agent.speed = chickenBT.runSpeed;
-                            chickenBT.agent.SetDestination(coverLocation);
+                            chickenBT.agent.SetDestination(hit.position);
                             chickenBT.isHiding = true;
                             foundCover = true;
                             animator.SetBool("Walking", false);
@@ -119,7 +117,7 @@ public class TaskHide : Node
 
                     Vector3 destination = new Vector3(chickenBT.agent.steeringTarget.x, ownTransform.position.y, chickenBT.agent.steeringTarget.z);
                     Quaternion targetRotation = Quaternion.LookRotation(destination - ownTransform.position);
-                    ownTransform.rotation = Quaternion.Slerp(ownTransform.rotation, targetRotation, Time.deltaTime * 10);
+                    ownTransform.localRotation = Quaternion.Slerp(ownTransform.localRotation, targetRotation, Time.deltaTime * 10);
 
                     state = NodeState.RUNNING;
                     return state;

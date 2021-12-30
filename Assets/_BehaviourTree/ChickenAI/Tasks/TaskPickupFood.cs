@@ -58,9 +58,15 @@ public class TaskPickupFood : Node
 
                         if (amountOfTimesEaten >= amountOfTimesRequiredToFeed)
                         {
-                            chickenBT.beenFedThreeTimes = true;
+                            chickenBT.beenFedCompletely = true;
+
+                            chickenBT.displayDecision.ChangeColorState(2);
+
                             EventSystemNew.RaiseEvent(Event_Type.CHICKEN_SUCCESSFULLY_FED);
-                            EventSystemNew.RaiseEvent(Event_Type.CHICKEN_DIED);
+                        }
+                        else
+                        {
+                            chickenBT.displayDecision.ChangeColorState(1);
                         }
                     }
 
