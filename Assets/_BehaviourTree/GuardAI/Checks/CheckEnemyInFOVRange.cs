@@ -12,6 +12,8 @@ public class CheckEnemyInFOVRange : Node
     private float fovAngle = 90f;
     private float fovRange = 0f;
 
+    private GameObject tempColliderTarget;
+
     public CheckEnemyInFOVRange(Transform _transform, Transform _headTransform, LayerMask _enemyLayer, LayerMask _obstructionLayer, float _fovRange)
     {
         ownTransform = _transform;
@@ -25,28 +27,39 @@ public class CheckEnemyInFOVRange : Node
     {
         Transform target = (Transform)GetData("Target");
 
-        Debug.Log("Test");
-
         if (target == null)
         {
             Collider[] colliders = Physics.OverlapSphere(ownTransform.position, fovRange, enemyLayer, QueryTriggerInteraction.Ignore);
 
             if (colliders.Length > 0)
             {
-                Vector3 directionToTarget = (colliders[0].transform.position - ownTransform.position).normalized;
-                
-                if (Vector3.Angle(ownTransform.forward, directionToTarget) < fovAngle / 2)
+                tempColliderTarget = colliders[0].gameObject;
+
+                Vector3 directionToTarget = (tempColliderTarget.transform.position - ownTransform.position).normalized;
+
+                float distanceToTarget = Vector3.Distance(ownTransform.position, tempColliderTarget.transform.position);
+
+                if (!Physics.Raycast(headTransform.position, directionToTarget, distanceToTarget, obstructionLayer) && distanceToTarget <= fovRange)
                 {
-                    float distanceToTarget = Vector3.Distance(ownTransform.position, colliders[0].transform.position);
+                    parent.parent.SetData("Target", tempColliderTarget.transform);
 
-                    if (!Physics.Raycast(headTransform.position, directionToTarget, distanceToTarget, obstructionLayer) && distanceToTarget < fovRange)
-                    {
-                        parent.parent.SetData("Target", colliders[0].transform);
-
-                        state = NodeState.SUCCESS;
-                        return state;
-                    }
+                    state = NodeState.SUCCESS;
+                    return state;
                 }
+
+                // WITH FOV
+                //if (Vector3.Angle(ownTransform.forward, directionToTarget) < fovAngle / 2)
+                //{
+                //    float distanceToTarget = Vector3.Distance(ownTransform.position, colliders[0].transform.position);
+
+                //    if (!Physics.Raycast(headTransform.position, directionToTarget, distanceToTarget, obstructionLayer) && distanceToTarget < fovRange)
+                //    {
+                //        parent.parent.SetData("Target", colliders[0].transform);
+
+                //        state = NodeState.SUCCESS;
+                //        return state;
+                //    }
+                //}
             }
         }
         else if (target.gameObject.activeInHierarchy)

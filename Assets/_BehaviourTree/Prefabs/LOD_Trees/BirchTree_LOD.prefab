@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8886620643078196530}
   - component: {fileID: 4302325499323479937}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: TreeBetterPivot(Clone)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -58,7 +58,7 @@ GameObject:
   - component: {fileID: 946670740587687304}
   - component: {fileID: 6881489859550001583}
   - component: {fileID: 6690796258399915457}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: PP_Birch_Tree_05
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -153,7 +153,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3483218931327840667}
   - component: {fileID: 114956125943729200}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: BirchTree_LOD
   m_TagString: Untagged
   m_Icon: {fileID: 0}

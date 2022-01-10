@@ -6,15 +6,13 @@ using TMPro;
 public class DisplayDecision : MonoBehaviour
 {
     [SerializeField] TextMeshPro decisionText;
-    public BehaviourTree.Tree decisionTree;
+    [SerializeField] BehaviourTree.Tree decisionTree;
 
-    [SerializeField] Color colorUnfed;
-    [SerializeField] Color colorFed;
-    [SerializeField] Color colorSuccessfullyFed;
+    [SerializeField] Gradient foodLevelGradient;
 
     private void Awake()
     {
-        ChangeColorState(0);
+        ColorFromGradient(1f);
     }
 
     private void Update()
@@ -23,19 +21,8 @@ public class DisplayDecision : MonoBehaviour
             decisionText.text = decisionTree.decision;
     }
 
-    public void ChangeColorState(int _stateIndex)
+    public void ColorFromGradient(float value)  // float between 0-1
     {
-        switch (_stateIndex)
-        {
-            case 0:
-                decisionText.color = colorUnfed;
-                break;
-            case 1:
-                decisionText.color = colorFed;
-                break;
-            case 2:
-                decisionText.color = colorSuccessfullyFed;
-                break;
-        }
+        decisionText.color = foodLevelGradient.Evaluate(value);
     }
 }

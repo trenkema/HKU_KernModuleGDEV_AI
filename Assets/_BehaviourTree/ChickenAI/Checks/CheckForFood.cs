@@ -11,7 +11,7 @@ public class CheckForFood : Node
     private LayerMask obstructionLayer;
     private ChickenBT chickenBT;
     private float itemFindRange = 0;
-    private float fovAngle = 90f;
+    private float fovAngle = 80f;
 
     public CheckForFood(Transform _transform, Transform _headTransform, LayerMask _itemLayer, LayerMask _obstructionLayer, ChickenBT _chickenBT, float _itemFindRange)
     {
@@ -62,10 +62,10 @@ public class CheckForFood : Node
                             if (closestItem.GetComponent<Pickupable>()?.pickupType == pickupableTypes.Useable)
                             {
                                 chickenBT.foundFood = true;
-                            }
 
-                            closestItem.GetComponent<Pickupable>().owner = ownTransform.gameObject;
-                            parent.parent.SetData("Pickupable", closestItem.transform);
+                                closestItem.GetComponent<Pickupable>().owner = ownTransform.gameObject;
+                                parent.parent.SetData("Pickupable", closestItem.transform);
+                            }
 
                             state = NodeState.SUCCESS;
                             return state;

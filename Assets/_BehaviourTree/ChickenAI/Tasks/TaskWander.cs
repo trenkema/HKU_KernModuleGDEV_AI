@@ -15,13 +15,16 @@ public class TaskWander : Node
     private float wanderTimeMax;
     private float wanderTimer;
 
+    private float walkSpeed = 0f;
+
     private float timer = 3f;
 
-    public TaskWander(Transform _transform, Animator _animator, ChickenBT _chickenBT, float _wanderTimeMin, float _wanderTimeMax, float _wanderRange)
+    public TaskWander(Transform _transform, Animator _animator, ChickenBT _chickenBT, float _walkSpeed, float _wanderTimeMin, float _wanderTimeMax, float _wanderRange)
     {
         ownTransform = _transform;
         animator = _animator;
         chickenBT = _chickenBT;
+        walkSpeed = _walkSpeed;
         wanderTimeMin = _wanderTimeMin;
         wanderTimeMax = _wanderTimeMax;
         wanderTimer = Random.Range(wanderTimeMin, wanderTimeMax);
@@ -42,23 +45,25 @@ public class TaskWander : Node
 
             if (chickenBT.resetWanderTimer)
             {
-                Debug.Log("Skip Timer");
                 timer = wanderTimer;
                 chickenBT.resetWanderTimer = false;
             }
 
-            Debug.Log("Wandering");
-            chickenBT.agent.stoppingDistance = 0;
-            chickenBT.agent.speed = chickenBT.walkSpeed;
+            chickenBT.agent.speed = walkSpeed;
 
             timer += Time.deltaTime;
 
             if (timer >= wanderTimer)
             {
-                wanderTimer = Random.Range(wanderTimeMin, wanderTimeMax);
-                Vector3 newPos = RandomNavSphere(ownTransform.position, wanderRange, -1);
-                chickenBT.agent.SetDestination(newPos);
-                timer = 0;
+                Vector3 destination = findPosition();
+
+                if (destination != Vector3.zero)
+                {
+                    chickenBT.agent.SetDestination(destination);
+
+                    wanderTimer = Random.Range(wanderTimeMin, wanderTimeMax);
+                    timer = 0;
+                }
             }
 
             if (chickenBT.agent.remainingDistance > 0.1f)
@@ -84,6 +89,18 @@ public class TaskWander : Node
 
         state = NodeState.FAILURE;
         return state;
+    }
+
+    private Vector3 findPosition()
+    {
+        Vector3 newPos = RandomNavSphere(ownTransform.position, wanderRange, chickenBT.agent.areaMask);
+
+        if (NavMesh.SamplePosition(newPos, out NavMeshHit hit, 1f, chickenBT.agent.areaMask))
+        {
+            return hit.position;
+        }
+
+        return Vector3.zero;
     }
 
     private Vector3 RandomNavSphere(Vector3 _origin, float _dist, int _layermask)

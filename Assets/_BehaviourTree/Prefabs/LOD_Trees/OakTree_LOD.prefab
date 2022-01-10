@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4276123096453695575}
   - component: {fileID: 3978089638140360953}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Capsule (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -55,7 +55,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1325676271187401821}
   - component: {fileID: 1508870021223049361}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Capsule (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -100,7 +100,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2633754199805122164}
   - component: {fileID: 5958347293879889382}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: OakTree_LOD
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -151,7 +151,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5307723991651142936}
   - component: {fileID: 925463343804529641}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Capsule
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -198,7 +198,7 @@ GameObject:
   - component: {fileID: 8170999846695868528}
   - component: {fileID: 8634265941791846570}
   - component: {fileID: 7797061994717767932}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: TreeColl(Clone)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -297,7 +297,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3868890846000691846}
   - component: {fileID: 8232510286375424452}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Capsule (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}

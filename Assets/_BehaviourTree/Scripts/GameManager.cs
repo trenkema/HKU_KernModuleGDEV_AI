@@ -8,6 +8,10 @@ using TMPro;
 
 public class GameManager : MonoBehaviour
 {
+    [SerializeField] float startChickensDelay = 1.5f;
+    private float chickensDelayTimer = 0f;
+    private bool enableChickensDelayTimer = true;
+
     [Header("Script References")]
     [SerializeField] ChickenManager chickenManager;
 
@@ -22,8 +26,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] Animator gameLost;
 
     [Header("Texts")]
-    [SerializeField] GameObject objectiveText;
-    [SerializeField] GameObject objectiveSubText;
+    [SerializeField] string mainMenuScene;
+
+    [SerializeField] GameObject panelToShow;
+    [SerializeField] GameObject panelToHide;
 
     [SerializeField] TextMeshProUGUI chickensDeadTextWon;
     [SerializeField] TextMeshProUGUI chickensFedTextWon;
@@ -58,6 +64,9 @@ public class GameManager : MonoBehaviour
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
+        panelToShow.SetActive(true);
+        panelToHide.SetActive(false);
+
         gameWon.gameObject.SetActive(false);
         gameLost.gameObject.SetActive(false);
 
@@ -65,14 +74,39 @@ public class GameManager : MonoBehaviour
         EventSystemNew.Subscribe(Event_Type.GAME_LOST, GameLost);
     }
 
+    private void OnDisable()
+    {
+        EventSystemNew.Unsubscribe(Event_Type.GAME_WON, GameWon);
+        EventSystemNew.Unsubscribe(Event_Type.GAME_LOST, GameLost);
+    }
+
     private void Update()
     {
         if (hasStarted)
         {
+            if (enableChickensDelayTimer)
+            {
+                chickensDelayTimer += Time.deltaTime;
+
+                if (chickensDelayTimer >= startChickensDelay)
+                {
+                    enableChickensDelayTimer = false;
+
+                    chickensDelayTimer = 0f;
+
+                    EventSystemNew.RaiseEvent(Event_Type.START_CHICKENS);
+                }
+            }
+
             if (Input.GetKeyDown(KeyCode.H))
             {
-                objectiveText.SetActive(!objectiveText.activeInHierarchy);
-                objectiveSubText.SetActive(!objectiveSubText.activeInHierarchy);
+                panelToShow.SetActive(!panelToShow.activeInHierarchy);
+                panelToHide.SetActive(!panelToHide.activeInHierarchy);
+            }
+
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                SceneManager.LoadScene(mainMenuScene);
             }
         }
     }

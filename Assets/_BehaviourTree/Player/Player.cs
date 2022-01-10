@@ -8,6 +8,9 @@ public class Player : MonoBehaviour, IDamageable
 {
     [SerializeField] Transform Camera;
 
+    [SerializeField] Color defaultOutlineColor;
+    [SerializeField] Color pickupableOutlineColor;
+
     [Space(10)]
 
     public bool isBeingAttacked = false;
@@ -84,6 +87,13 @@ public class Player : MonoBehaviour, IDamageable
         EventSystemNew.Subscribe(Event_Type.START_GAME, StartGame);
         EventSystemNew.Subscribe(Event_Type.GAME_WON, EndGame);
         EventSystemNew.Subscribe(Event_Type.GAME_LOST, EndGame);
+    }
+
+    private void OnDisable()
+    {
+        EventSystemNew.Unsubscribe(Event_Type.START_GAME, StartGame);
+        EventSystemNew.Unsubscribe(Event_Type.GAME_WON, EndGame);
+        EventSystemNew.Unsubscribe(Event_Type.GAME_LOST, EndGame);
     }
 
     void Update()
@@ -223,17 +233,17 @@ public class Player : MonoBehaviour, IDamageable
 
                     if (pickupable.owner == null)
                     {
-                        other.GetComponent<OutlineGameObject>().enabled = true;
+                        other.GetComponent<OutlineGameObject>().OutlineColor = pickupableOutlineColor;
                     }
                     else
                     {
-                        other.GetComponent<OutlineGameObject>().enabled = false;
+                        other.GetComponent<OutlineGameObject>().OutlineColor = defaultOutlineColor;
                     }
                 }
             }
             else
             {
-                other.GetComponent<OutlineGameObject>().enabled = false;
+                other.GetComponent<OutlineGameObject>().OutlineColor = defaultOutlineColor;
             }
         }
     }
@@ -244,7 +254,7 @@ public class Player : MonoBehaviour, IDamageable
         {
             if (other.GetComponent<Pickupable>() != null)
             {
-                other.GetComponent<OutlineGameObject>().enabled = false;
+                other.GetComponent<OutlineGameObject>().OutlineColor = defaultOutlineColor;
             }
         }
     }

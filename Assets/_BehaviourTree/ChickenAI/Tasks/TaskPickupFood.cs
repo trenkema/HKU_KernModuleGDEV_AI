@@ -13,14 +13,10 @@ public class TaskPickupFood : Node
     private float pickUpCounter = 0f;
     private bool pickingUp = false;
 
-    private int amountOfTimesEaten = 0;
-    private int amountOfTimesRequiredToFeed;
-
-    public TaskPickupFood(Animator _animator, ChickenBT _chickenBT, int _amountOfTimesRequiredToFeed)
+    public TaskPickupFood(Animator _animator, ChickenBT _chickenBT)
     {
         animator = _animator;
         chickenBT = _chickenBT;
-        amountOfTimesRequiredToFeed = _amountOfTimesRequiredToFeed;
     }
 
     public override NodeState Evaluate()
@@ -50,24 +46,17 @@ public class TaskPickupFood : Node
 
                     target.gameObject.SetActive(false);
 
-                    if (target.GetComponent<Pickupable>()?.pickupType == pickupableTypes.Useable)
+                    EventSystemNew<GameObject>.RaiseEvent(Event_Type.FRUIT_EATEN, target.gameObject);
+
+                    if (target.GetComponent<Pickupable>() != null)
                     {
-                        chickenBT.needFood = false;
+                        Pickupable pickupable = target.GetComponent<Pickupable>();
 
-                        amountOfTimesEaten++;
+                        if (pickupable.pickupType == pickupableTypes.Useable)
+                            chickenBT.needFood = false;
 
-                        if (amountOfTimesEaten >= amountOfTimesRequiredToFeed)
-                        {
-                            chickenBT.beenFedCompletely = true;
+                        pickupable.owner = null;
 
-                            chickenBT.displayDecision.ChangeColorState(2);
-
-                            EventSystemNew.RaiseEvent(Event_Type.CHICKEN_SUCCESSFULLY_FED);
-                        }
-                        else
-                        {
-                            chickenBT.displayDecision.ChangeColorState(1);
-                        }
                     }
 
                     ClearData("Pickupable");
@@ -82,7 +71,7 @@ public class TaskPickupFood : Node
 
             if (!chickenBT.isHiding && !pickingUp)
             {
-                if (chickenBT.agent.remainingDistance < 0.4f)
+                if (chickenBT.agent.remainingDistance < 0.2f)
                 {
                     chickenBT.decision = "E"; // Set Decision
                     animator.SetTrigger("Eat");

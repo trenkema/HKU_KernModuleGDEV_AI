@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/_BehaviourTree/Scenes/BT_KernModule.unity
-    guid: 0f3401306c544174c939c40d1073295e
+    path: Assets/_BehaviourTree/Scenes/BT_KeuzeModule.unity
+    guid: c0835ba3d7a00ac469eb22966285b496
   m_configObjects: {}

@@ -21,11 +21,14 @@ public class TaskHide : Node
 
     private bool foundCover = false;
 
-    public TaskHide(Transform _transform, Animator _animator, ChickenBT _chickenBT, LayerMask _hideableLayers, float _findCoverRange, float _minCoverEnemyDistance, float _minEnemyDistance)
+    private float runSpeed = 0f;
+
+    public TaskHide(Transform _transform, Animator _animator, ChickenBT _chickenBT, float _runSpeed, LayerMask _hideableLayers, float _findCoverRange, float _minCoverEnemyDistance, float _minEnemyDistance)
     {
         ownTransform = _transform;
         animator = _animator;
         chickenBT = _chickenBT;
+        runSpeed = _runSpeed;
         hideableLayers = _hideableLayers;
         findCoverRadius = _findCoverRange;
         minCoverEnemyDistance = _minCoverEnemyDistance;
@@ -60,7 +63,7 @@ public class TaskHide : Node
             {
                 Debug.Log("Enemy Too Close");
 
-                chickenBT.agent.stoppingDistance = 0;
+                //chickenBT.agent.stoppingDistance = 0;
 
                 for (int i = 0; i < colliders.Length; i++)
                 {
@@ -86,17 +89,19 @@ public class TaskHide : Node
 
                 for (int i = 0; i < hits; i++)
                 {
-                    Debug.Log("Hit Position: " + colliders[i].transform.position);
-
                     bool isThereCover = RandomPoint(colliders[i].transform.position, 2f, target, out coverLocation);
 
                     if (isThereCover)
                     {
-                        if (NavMesh.SamplePosition(coverLocation, out NavMeshHit hit, 1f, chickenBT.agent.areaMask))
+                        NavMeshHit hit = new NavMeshHit();
+
+                        if (NavMesh.SamplePosition(coverLocation, out hit, 1f, chickenBT.agent.areaMask))
                         {
-                            Debug.Log("Found Cover: " + coverLocation);
-                            chickenBT.agent.speed = chickenBT.runSpeed;
+                            Debug.Log("Found Cover: " + hit.position);
+                            chickenBT.agent.speed = runSpeed;
+                            
                             chickenBT.agent.SetDestination(hit.position);
+
                             chickenBT.isHiding = true;
                             foundCover = true;
                             animator.SetBool("Walking", false);
@@ -106,39 +111,38 @@ public class TaskHide : Node
                     }
                 }
             }
+        }
 
-            if (chickenBT.isHiding)
+        if (chickenBT.isHiding)
+        {
+            if (chickenBT.agent.pathPending)
             {
-                if (chickenBT.agent.remainingDistance > 0.1f)
-                {
-                    animator.SetBool("Walking", false);
-                    animator.SetBool("Running", true);
-                    chickenBT.decision = "S";
-
-                    Vector3 destination = new Vector3(chickenBT.agent.steeringTarget.x, ownTransform.position.y, chickenBT.agent.steeringTarget.z);
-                    Quaternion targetRotation = Quaternion.LookRotation(destination - ownTransform.position);
-                    ownTransform.localRotation = Quaternion.Slerp(ownTransform.localRotation, targetRotation, Time.deltaTime * 10);
-
-                    state = NodeState.RUNNING;
-                    return state;
-                }
-                else
-                {
-                    animator.SetBool("Walking", false);
-                    animator.SetBool("Running", false);
-
-                    Debug.Log("Reached Cover");
-                    chickenBT.isHiding = false;
-                    chickenBT.resetWanderTimer = true;
-                    foundCover = false;
-
-                    Vector3 destination = new Vector3(target.position.x, ownTransform.position.y, target.position.z);
-                    Quaternion targetRotation = Quaternion.LookRotation(destination - ownTransform.position);
-                    ownTransform.rotation = Quaternion.Slerp(ownTransform.rotation, targetRotation, Time.deltaTime * 10);
-                    state = NodeState.SUCCESS;
-                    return state;
-                }
+                state = NodeState.RUNNING;
+                return state;
             }
+
+            animator.SetBool("Walking", false);
+            animator.SetBool("Running", true);
+            chickenBT.decision = "S";
+
+            Vector3 destination = new Vector3(chickenBT.agent.steeringTarget.x, ownTransform.position.y, chickenBT.agent.steeringTarget.z);
+            Quaternion targetRotation = Quaternion.LookRotation(destination - ownTransform.position);
+            ownTransform.localRotation = Quaternion.Slerp(ownTransform.localRotation, targetRotation, Time.deltaTime * 10);
+
+            if (chickenBT.agent.remainingDistance < 0.15f)
+            {
+                chickenBT.isHiding = false;
+                foundCover = false;
+                chickenBT.resetWanderTimer = true;
+
+                animator.SetBool("Walking", false);
+                animator.SetBool("Running", false);
+
+                ownTransform.localRotation = Quaternion.Slerp(ownTransform.localRotation, targetRotation, Time.deltaTime * 10);
+            }
+
+            state = NodeState.RUNNING;
+            return state;
         }
 
         state = NodeState.SUCCESS;

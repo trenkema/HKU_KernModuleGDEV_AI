@@ -10,11 +10,14 @@ public class TaskGoToFood : Node
     private Animator animator;
     private ChickenBT chickenBT;
 
-    public TaskGoToFood(Transform _transform, Animator _animator, ChickenBT _chickenBT)
+    private float runSpeed = 0f;
+
+    public TaskGoToFood(Transform _transform, Animator _animator, ChickenBT _chickenBT, float _runSpeed)
     {
         ownTransform = _transform;
         animator = _animator;
         chickenBT = _chickenBT;
+        runSpeed = _runSpeed;
     }
 
     public override NodeState Evaluate()
@@ -36,15 +39,13 @@ public class TaskGoToFood : Node
                 }
             }
 
-            chickenBT.agent.stoppingDistance = 0.4f;
-
             if (chickenBT.agent.remainingDistance > 0.2f)
             {
                 chickenBT.decision = "F"; // Set Decision
                 animator.SetBool("Running", true);
                 animator.SetBool("Walking", false);
 
-                chickenBT.agent.speed = chickenBT.runSpeed;
+                chickenBT.agent.speed = runSpeed;
 
                 chickenBT.agent.SetDestination(target.position);
 

@@ -5,36 +5,68 @@ using TMPro;
 
 public class ChickenManager : MonoBehaviour
 {
+    [SerializeField] float timeToDropNewFruit = 2.5f;
+
+    [SerializeField] float timeToKeepChickensAlive = 300f;
+
     [SerializeField] TextMeshProUGUI objectiveText;
     [SerializeField] TextMeshProUGUI objectiveSubText;
 
-    [SerializeField] TextMeshProUGUI chickensSuccessfullyFedText;
     [SerializeField] TextMeshProUGUI chickensDeadText;
 
-    [SerializeField] int amountOfTimesRequiredToFeed = 3;
-
-    [SerializeField] int chickensSuccessfullyFedLimit = 5;
     [SerializeField] int chickensDeadLimit = 3;
 
     [SerializeField] int amountOfChickenDrops;
 
+    [Header("References")]
     [SerializeField] List<GameObject> chickenDrops = new List<GameObject>();
 
-    private int chickensSuccessfullyFed = 0;
+    [SerializeField] List<Transform> chickenDropsSpawnpoints = new List<Transform>();
+
+    [Space(5)]
+
+    [SerializeField] List<Transform> chickenSpawnpoints = new List<Transform>();
+
+    [SerializeField] GameObject[] chickens;
+
+    private Dictionary<GameObject, Transform> droppedFruits = new Dictionary<GameObject, Transform>();
+
+    private float keepChickensAliveTimer = 0;
+
+    private int chickensFed = 0;
     private int chickensDead = 0;
 
     private int amountOfChickenDropsSelected = 0;
 
+    private bool hasStarted = false;
+
+    private void Awake()
+    {
+        keepChickensAliveTimer = timeToKeepChickensAlive;
+
+        for (int i = 0; i < chickens.Length; i++)
+        {
+            int randomSpawnpoint = Random.Range(0, chickenSpawnpoints.Count);
+
+            chickens[i].transform.position = chickenSpawnpoints[randomSpawnpoint].position;
+
+            chickenSpawnpoints.Remove(chickenSpawnpoints[randomSpawnpoint]);
+        }
+    }
+
     private void Start()
     {
         EventSystemNew.Subscribe(Event_Type.CHICKEN_DIED, ChickenDied);
-        EventSystemNew.Subscribe(Event_Type.CHICKEN_SUCCESSFULLY_FED, ChickenSuccessfullyFed);
+        EventSystemNew.Subscribe(Event_Type.START_GAME, StartGame);
+        EventSystemNew<GameObject>.Subscribe(Event_Type.FRUIT_EATEN, FruitEaten);
 
-        objectiveText.text = "Feed " + chickensSuccessfullyFedLimit + " Chickens " + amountOfTimesRequiredToFeed + " Times";
-        objectiveSubText.text = "Only " + chickensDeadLimit + " Chickens Can Die";
+        string timeLeft = FormatTime(keepChickensAliveTimer);
 
-        chickensSuccessfullyFedText.text = chickensSuccessfullyFed + " Chickens Fed";
-        chickensDeadText.text = chickensDead + " Chickens Dead";
+        objectiveText.text = "Keep The Chickens Alive For " + timeLeft;
+
+        objectiveSubText.text = "Only " + chickensDeadLimit + " Chicken(s) Can Die";
+
+        chickensDeadText.text = chickensDead + " Chicken(s) Died";
 
         foreach (var chickenDrop in chickenDrops)
         {
@@ -48,30 +80,105 @@ public class ChickenManager : MonoBehaviour
                 int randomNumber = Random.Range(0, chickenDrops.Count);
 
                 chickenDrops[randomNumber].SetActive(true);
+
+                int randomPosition = Random.Range(0, chickenDropsSpawnpoints.Count);
+
+                chickenDrops[randomNumber].transform.position = chickenDropsSpawnpoints[randomPosition].position;
+
+                droppedFruits.Add(chickenDrops[randomNumber], chickenDropsSpawnpoints[randomPosition]);
+
                 chickenDrops.Remove(chickenDrops[randomNumber]);
+                chickenDropsSpawnpoints.Remove(chickenDropsSpawnpoints[randomPosition]);
 
                 amountOfChickenDropsSelected++;
             }
         }
     }
 
-    private void ChickenSuccessfullyFed()
+    private void OnDisable()
     {
-        chickensSuccessfullyFed++;
+        EventSystemNew.Unsubscribe(Event_Type.CHICKEN_DIED, ChickenDied);
+        EventSystemNew.Unsubscribe(Event_Type.START_GAME, StartGame);
+        EventSystemNew<GameObject>.Unsubscribe(Event_Type.FRUIT_EATEN, FruitEaten);
 
-        chickensSuccessfullyFedText.text = chickensSuccessfullyFed + " Chickens Fed";
+        CancelInvoke();
+    }
 
-        if (chickensSuccessfullyFed >= chickensSuccessfullyFedLimit)
+    private void Update()
+    {
+        if (hasStarted)
         {
-            EventSystemNew.RaiseEvent(Event_Type.GAME_WON);
+            keepChickensAliveTimer -= Time.deltaTime;
+
+            string timeLeft = FormatTime(keepChickensAliveTimer);
+
+            objectiveText.text = "Keep The Chickens Alive For " + timeLeft;
+
+            if (keepChickensAliveTimer <= 0)
+            {
+                EventSystemNew.RaiseEvent(Event_Type.GAME_WON);
+            }
         }
+    }
+
+    private void FruitEaten(GameObject _fruitEaten)
+    {
+        chickenDrops.Add(_fruitEaten);
+        chickenDropsSpawnpoints.Add(droppedFruits[_fruitEaten]);
+
+        droppedFruits.Remove(_fruitEaten);
+
+        amountOfChickenDropsSelected--;
+
+        chickensFed++;
+
+        Invoke("SpawnFruit", timeToDropNewFruit);
+    }
+
+    private void SpawnFruit()
+    {
+        for (int i = 0; i < amountOfChickenDrops; i++)
+        {
+            if (amountOfChickenDropsSelected <= amountOfChickenDrops)
+            {
+                int randomNumber = Random.Range(0, chickenDrops.Count);
+
+                chickenDrops[randomNumber].SetActive(true);
+
+                int randomPosition = Random.Range(0, chickenDropsSpawnpoints.Count);
+
+                chickenDrops[randomNumber].transform.position = chickenDropsSpawnpoints[randomPosition].position;
+
+                droppedFruits.Add(chickenDrops[randomNumber], chickenDropsSpawnpoints[randomPosition]);
+
+                chickenDrops.Remove(chickenDrops[randomNumber]);
+                chickenDropsSpawnpoints.Remove(chickenDropsSpawnpoints[randomPosition]);
+
+                amountOfChickenDropsSelected++;
+            }
+            else
+                break;
+        }
+    }
+
+    private void StartGame()
+    {
+        hasStarted = true;
+    }
+
+    private string FormatTime(float _time)
+    {
+        int minutes = (int)_time / 60;
+        int seconds = (int)_time - 60 * minutes;
+
+        return (minutes + "m " + seconds + "s");
     }
 
     private void ChickenDied()
     {
         chickensDead++;
 
-        chickensDeadText.text = chickensDead + " Chickens Dead";
+        chickensDeadText.text = chickensDead + " Chicken(s) Died";
 
         if (chickensDead >= chickensDeadLimit)
         {
@@ -81,7 +188,7 @@ public class ChickenManager : MonoBehaviour
 
     public int GetChickensFed()
     {
-        return chickensSuccessfullyFed;
+        return chickensFed;
     }
 
     public int GetChickensDied()

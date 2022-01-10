@@ -5,6 +5,8 @@ using UnityEngine;
 public enum Event_Type
 {
     START_GAME,
+    START_CHICKENS,
+    FRUIT_EATEN,
     GAME_WON,
     GAME_LOST,
     CHICKEN_DIED,

@@ -16,8 +16,12 @@ public class CheckForHunger : Node
     public CheckForHunger(ChickenBT _chickenBT, float _needFoodCooldown, float _hungryDeathTime)
     {
         chickenBT = _chickenBT;
+
         needFoodCooldownTime = _needFoodCooldown;
+
         hungryDeathTime = _hungryDeathTime;
+
+        hungryTimer = hungryDeathTime;
     }
 
     public override NodeState Evaluate()
@@ -28,7 +32,6 @@ public class CheckForHunger : Node
             ClearData("Pickupable");
 
             chickenBT.isPickingup = false;
-            chickenBT.isEating = false;
             chickenBT.isHiding = false;
             chickenBT.foundFood = false;
 
@@ -38,22 +41,41 @@ public class CheckForHunger : Node
 
         if (!chickenBT.needFood)
         {
+            chickenBT.displayDecision.ColorFromGradient(1f);
+
+            hungryTimer = hungryDeathTime;
+
             needFoodTimer += Time.deltaTime;
 
             if (needFoodTimer >= needFoodCooldownTime)
             {
                 chickenBT.needFood = true;
-                hungryTimer = 0f;
+
                 needFoodTimer = 0f;
             }
         }
 
-        if (chickenBT.needFood && !chickenBT.beenFedCompletely)
+        if (chickenBT.needFood)
         {
-            hungryTimer += Time.deltaTime;
+            hungryTimer -= Time.deltaTime;
 
-            if (hungryTimer >= hungryDeathTime)
+            float gradientTime = hungryTimer / hungryDeathTime;
+
+            Debug.Log("Gradient Time: " + gradientTime);
+
+            chickenBT.displayDecision.ColorFromGradient(gradientTime);
+
+            if (hungryTimer <= 0)
             {
+                Transform pickupable = (Transform)GetData("Pickupable");
+
+                if (pickupable != null)
+                {
+                    pickupable.GetComponent<Pickupable>().owner = null;
+                    ClearData("Pickupable");
+                    chickenBT.foundFood = false;
+                }
+
                 chickenBT.ChickenDied();
             }
         }
