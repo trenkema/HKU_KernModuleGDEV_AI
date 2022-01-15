@@ -36,6 +36,9 @@ public class GuardBT : BehaviourTree.Tree
     [SerializeField] float setUpgradedRunSpeed = 4.5f;
     public float upgradedRunSpeed { get { return setUpgradedRunSpeed; } }
 
+    [SerializeField] float setFovAngle = 90f;
+    public float fovAngle { get { return setFovAngle; } }
+
     [SerializeField] float setFovRange = 6f;
     public float fovRange { get { return setFovRange; } }
 
@@ -87,7 +90,7 @@ public class GuardBT : BehaviourTree.Tree
             new Sequence(new List<Node>
             {
                 new CheckSightBlocked(transform, animator, blockedSightLayer, this),
-                new CheckEnemyInFOVRange(transform, headTransform, enemyLayer, obstructionLayer, fovRange),
+                new CheckEnemyInFOVRange(transform, headTransform, enemyLayer, obstructionLayer, fovRange, fovAngle),
                 new CheckForItem(transform, headTransform, pickupableLayer, obstructionLayer, this, pickupableFindRange),
                 new TaskGoToItem(transform, animator, this),
                 new TaskPickUpItem(transform, animator, this, attackManager),

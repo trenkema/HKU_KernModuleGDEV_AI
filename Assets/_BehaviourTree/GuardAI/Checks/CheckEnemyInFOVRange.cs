@@ -9,18 +9,19 @@ public class CheckEnemyInFOVRange : Node
     private Transform headTransform;
     private LayerMask enemyLayer;
     private LayerMask obstructionLayer;
-    private float fovAngle = 90f;
+    private float fovAngle = 0f;
     private float fovRange = 0f;
 
     private GameObject tempColliderTarget;
 
-    public CheckEnemyInFOVRange(Transform _transform, Transform _headTransform, LayerMask _enemyLayer, LayerMask _obstructionLayer, float _fovRange)
+    public CheckEnemyInFOVRange(Transform _transform, Transform _headTransform, LayerMask _enemyLayer, LayerMask _obstructionLayer, float _fovRange, float _fovAngle)
     {
         ownTransform = _transform;
         headTransform = _headTransform;
         enemyLayer = _enemyLayer;
         obstructionLayer = _obstructionLayer;
         fovRange = _fovRange;
+        fovAngle = _fovAngle;
     }
 
     public override NodeState Evaluate()
@@ -37,14 +38,18 @@ public class CheckEnemyInFOVRange : Node
 
                 Vector3 directionToTarget = (tempColliderTarget.transform.position - ownTransform.position).normalized;
 
-                float distanceToTarget = Vector3.Distance(ownTransform.position, tempColliderTarget.transform.position);
-
-                if (!Physics.Raycast(headTransform.position, directionToTarget, distanceToTarget, obstructionLayer) && distanceToTarget <= fovRange)
+                if (Vector3.Angle(ownTransform.forward, directionToTarget) < fovAngle / 2)
                 {
-                    parent.parent.SetData("Target", tempColliderTarget.transform);
 
-                    state = NodeState.SUCCESS;
-                    return state;
+                    float distanceToTarget = Vector3.Distance(ownTransform.position, tempColliderTarget.transform.position);
+
+                    if (!Physics.Raycast(headTransform.position, directionToTarget, distanceToTarget, obstructionLayer) && distanceToTarget <= fovRange)
+                    {
+                        parent.parent.SetData("Target", tempColliderTarget.transform);
+
+                        state = NodeState.SUCCESS;
+                        return state;
+                    }
                 }
             }
         }
@@ -56,7 +61,7 @@ public class CheckEnemyInFOVRange : Node
             {
                 float distanceToTarget = Vector3.Distance(ownTransform.position, target.position);
 
-                if (!Physics.Raycast(headTransform.position, directionToTarget2, distanceToTarget, obstructionLayer) && distanceToTarget < fovRange)
+                if (!Physics.Raycast(headTransform.position, directionToTarget2, distanceToTarget, obstructionLayer) && distanceToTarget <= fovRange)
                 {
                     state = NodeState.SUCCESS;
                     return state;

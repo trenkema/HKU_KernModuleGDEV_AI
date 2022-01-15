@@ -59,6 +59,9 @@ public class ChickenBT : BehaviourTree.Tree
     [Range(0, 15f)]
     [SerializeField] float fovRange = 7.5f;
 
+    [Range(0, 360f)]
+    [SerializeField] float fovAngle = 360f;
+
     [Space(5)]
 
     [Range(0, 5f)]
@@ -103,10 +106,11 @@ public class ChickenBT : BehaviourTree.Tree
         {
             new Sequence(new List<Node>
             {
-                new CheckEnemyInFOVRange(transform, headTransform, enemyLayer, obstructionLayer, fovRange),
+                new CheckEnemyInFOVRange(transform, headTransform, enemyLayer, obstructionLayer, fovRange, fovAngle),
                 new CheckForHunger(this, needFoodCooldown, hungerDeathTime),
                 new CheckForFood(transform, headTransform, eatLayer, obstructionLayer, this, foodFindRange),
-                new TaskHide(transform, animator, this, runSpeed, hideableLayers, findCoverRange, minCoverEnemyDistance, fovRange),
+                new TaskHide(transform, animator, this, runSpeed, hideableLayers,
+                findCoverRange, minCoverEnemyDistance, fovRange),
                 new TaskGoToFood(transform, animator, this, runSpeed),
                 new TaskPickupFood(animator, this),
             }),
