@@ -61,8 +61,6 @@ public class CheckForHunger : Node
 
             float gradientTime = hungryTimer / hungryDeathTime;
 
-            Debug.Log("Gradient Time: " + gradientTime);
-
             chickenBT.displayDecision.ColorFromGradient(gradientTime);
 
             if (hungryTimer <= 0)

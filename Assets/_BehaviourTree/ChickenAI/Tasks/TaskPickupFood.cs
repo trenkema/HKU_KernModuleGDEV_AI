@@ -9,7 +9,7 @@ public class TaskPickupFood : Node
 
     private ChickenBT chickenBT;
 
-    private float pickUpTime = 1.2f;
+    private float pickUpTime = 1.4f;
     private float pickUpCounter = 0f;
     private bool pickingUp = false;
 
@@ -44,10 +44,6 @@ public class TaskPickupFood : Node
                     chickenBT.isPickingup = false;
                     chickenBT.foundFood = false;
 
-                    target.gameObject.SetActive(false);
-
-                    EventSystemNew<GameObject>.RaiseEvent(Event_Type.FRUIT_EATEN, target.gameObject);
-
                     if (target.GetComponent<Pickupable>() != null)
                     {
                         Pickupable pickupable = target.GetComponent<Pickupable>();
@@ -61,6 +57,10 @@ public class TaskPickupFood : Node
 
                     ClearData("Pickupable");
 
+                    target.gameObject.SetActive(false);
+
+                    EventSystemNew<GameObject>.RaiseEvent(Event_Type.FRUIT_EATEN, target.gameObject);
+
                     state = NodeState.FAILURE;
                     return state;
                 }
@@ -73,7 +73,7 @@ public class TaskPickupFood : Node
             {
                 if (chickenBT.agent.remainingDistance < 0.2f)
                 {
-                    chickenBT.decision = "E"; // Set Decision
+                    chickenBT.decision = "Eat"; // Set Decision
                     animator.SetTrigger("Eat");
                     animator.SetBool("Running", false);
                     animator.SetBool("Walking", false);

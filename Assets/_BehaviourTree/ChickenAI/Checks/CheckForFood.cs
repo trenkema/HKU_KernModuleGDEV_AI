@@ -29,8 +29,6 @@ public class CheckForFood : Node
 
         if (target == null && chickenBT.needFood && !chickenBT.isHiding)
         {
-            Debug.Log("Finding Target");
-
             Collider[] colliders = Physics.OverlapSphere(ownTransform.position, itemFindRange, itemLayer);
 
             float bestDistance = 99999.0f;

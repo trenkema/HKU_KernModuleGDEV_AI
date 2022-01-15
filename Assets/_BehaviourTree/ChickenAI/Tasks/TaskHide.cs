@@ -55,16 +55,10 @@ public class TaskHide : Node
                 chickenBT.foundFood = false;
             }
 
-            Debug.Log("Target Not Null");
-
             float distanceToEnemy = Vector3.Distance(target.position, ownTransform.position);
 
             if (distanceToEnemy <= minEnemyDistance && !foundCover)
             {
-                Debug.Log("Enemy Too Close");
-
-                //chickenBT.agent.stoppingDistance = 0;
-
                 for (int i = 0; i < colliders.Length; i++)
                 {
                     colliders[i] = null;
@@ -97,7 +91,6 @@ public class TaskHide : Node
 
                         if (NavMesh.SamplePosition(coverLocation, out hit, 1f, chickenBT.agent.areaMask))
                         {
-                            Debug.Log("Found Cover: " + hit.position);
                             chickenBT.agent.speed = runSpeed;
                             
                             chickenBT.agent.SetDestination(hit.position);
@@ -123,7 +116,7 @@ public class TaskHide : Node
 
             animator.SetBool("Walking", false);
             animator.SetBool("Running", true);
-            chickenBT.decision = "S";
+            chickenBT.decision = "Covering";
 
             Vector3 destination = new Vector3(chickenBT.agent.steeringTarget.x, ownTransform.position.y, chickenBT.agent.steeringTarget.z);
             Quaternion targetRotation = Quaternion.LookRotation(destination - ownTransform.position);

@@ -50,6 +50,8 @@ public class Player : MonoBehaviour, IDamageable
 
     public bool hasStarted = false;
 
+    private GameObject pickedupFruit;
+
     void Start()
     {
         if (healthText != null)
@@ -125,7 +127,14 @@ public class Player : MonoBehaviour, IDamageable
             if (Input.GetKeyDown(KeyCode.Q) && hasFood)
             {
                 hasFood = false;
-                Instantiate(pickupableDrops[pickupableIndex], dropTransform.position, Quaternion.identity);
+
+                pickedupFruit.transform.position = dropTransform.position;
+                pickedupFruit.transform.rotation = Quaternion.identity;
+
+                pickedupFruit.SetActive(true);
+
+                pickedupFruit = null;
+
                 pickupableIndex = 0;
 
                 foreach (var sprite in pickupablesSprites)
@@ -217,7 +226,9 @@ public class Player : MonoBehaviour, IDamageable
 
                         dropText.SetActive(true);
 
-                        Destroy(other.gameObject);
+                        pickedupFruit = other.gameObject;
+
+                        other.gameObject.SetActive(false);
                     }
                 }
             }

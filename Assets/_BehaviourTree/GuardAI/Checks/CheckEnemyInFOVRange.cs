@@ -46,20 +46,6 @@ public class CheckEnemyInFOVRange : Node
                     state = NodeState.SUCCESS;
                     return state;
                 }
-
-                // WITH FOV
-                //if (Vector3.Angle(ownTransform.forward, directionToTarget) < fovAngle / 2)
-                //{
-                //    float distanceToTarget = Vector3.Distance(ownTransform.position, colliders[0].transform.position);
-
-                //    if (!Physics.Raycast(headTransform.position, directionToTarget, distanceToTarget, obstructionLayer) && distanceToTarget < fovRange)
-                //    {
-                //        parent.parent.SetData("Target", colliders[0].transform);
-
-                //        state = NodeState.SUCCESS;
-                //        return state;
-                //    }
-                //}
             }
         }
         else if (target.gameObject.activeInHierarchy)
@@ -72,13 +58,11 @@ public class CheckEnemyInFOVRange : Node
 
                 if (!Physics.Raycast(headTransform.position, directionToTarget2, distanceToTarget, obstructionLayer) && distanceToTarget < fovRange)
                 {
-                    Debug.Log("Target Visible");
                     state = NodeState.SUCCESS;
                     return state;
                 }
                 else
                 {
-                    Debug.Log("Target Not Visible");
                     ClearData("Target");
                     state = NodeState.SUCCESS;
                     return state;

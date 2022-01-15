@@ -41,7 +41,7 @@ public class TaskGoToFood : Node
 
             if (chickenBT.agent.remainingDistance > 0.2f)
             {
-                chickenBT.decision = "F"; // Set Decision
+                chickenBT.decision = "To Food"; // Set Decision
                 animator.SetBool("Running", true);
                 animator.SetBool("Walking", false);
 

@@ -68,7 +68,7 @@ public class TaskWander : Node
 
             if (chickenBT.agent.remainingDistance > 0.1f)
             {
-                chickenBT.decision = "W"; // Set Decision
+                chickenBT.decision = "Wander"; // Set Decision
                 animator.SetBool("Running", false);
                 animator.SetBool("Walking", true);
 
