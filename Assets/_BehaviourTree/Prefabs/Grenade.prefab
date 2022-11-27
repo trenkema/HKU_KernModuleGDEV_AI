@@ -133,7 +133,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   topParticles: {fileID: 181225697357459090}
   explodeParticles: {fileID: 2829763292807609370, guid: 331ab64c8acd9994c82497340852a934, type: 3}
-  timeToDestroy: 5
   explosionTime: 1
 --- !u!135 &3164392325184014976
 SphereCollider:

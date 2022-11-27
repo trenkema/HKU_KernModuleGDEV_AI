@@ -69,7 +69,10 @@ public class GameManager : MonoBehaviour
 
         gameWon.gameObject.SetActive(false);
         gameLost.gameObject.SetActive(false);
+    }
 
+    private void OnEnable()
+    {
         EventSystemNew.Subscribe(Event_Type.GAME_WON, GameWon);
         EventSystemNew.Subscribe(Event_Type.GAME_LOST, GameLost);
     }

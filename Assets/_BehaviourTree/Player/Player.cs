@@ -85,7 +85,10 @@ public class Player : MonoBehaviour, IDamageable
         rb.useGravity = true;
 
         dropText.SetActive(false);
+    }
 
+    private void OnEnable()
+    {
         EventSystemNew.Subscribe(Event_Type.START_GAME, StartGame);
         EventSystemNew.Subscribe(Event_Type.GAME_WON, EndGame);
         EventSystemNew.Subscribe(Event_Type.GAME_LOST, EndGame);

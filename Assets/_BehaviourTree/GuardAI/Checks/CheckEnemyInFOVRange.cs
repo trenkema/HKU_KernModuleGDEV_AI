@@ -40,7 +40,6 @@ public class CheckEnemyInFOVRange : Node
 
                 if (Vector3.Angle(ownTransform.forward, directionToTarget) < fovAngle / 2)
                 {
-
                     float distanceToTarget = Vector3.Distance(ownTransform.position, tempColliderTarget.transform.position);
 
                     if (!Physics.Raycast(headTransform.position, directionToTarget, distanceToTarget, obstructionLayer) && distanceToTarget <= fovRange)

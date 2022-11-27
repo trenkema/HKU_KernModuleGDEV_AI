@@ -56,10 +56,6 @@ public class ChickenManager : MonoBehaviour
 
     private void Start()
     {
-        EventSystemNew.Subscribe(Event_Type.CHICKEN_DIED, ChickenDied);
-        EventSystemNew.Subscribe(Event_Type.START_GAME, StartGame);
-        EventSystemNew<GameObject>.Subscribe(Event_Type.FRUIT_EATEN, FruitEaten);
-
         string timeLeft = FormatTime(keepChickensAliveTimer);
 
         objectiveText.text = "Keep The Chickens Alive For " + timeLeft;
@@ -93,6 +89,13 @@ public class ChickenManager : MonoBehaviour
                 amountOfChickenDropsSelected++;
             }
         }
+    }
+
+    private void OnEnable()
+    {
+        EventSystemNew.Subscribe(Event_Type.CHICKEN_DIED, ChickenDied);
+        EventSystemNew.Subscribe(Event_Type.START_GAME, StartGame);
+        EventSystemNew<GameObject>.Subscribe(Event_Type.FRUIT_EATEN, FruitEaten);
     }
 
     private void OnDisable()

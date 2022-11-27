@@ -7,13 +7,13 @@ using BehaviourTree;
 public class ChickenBT : BehaviourTree.Tree
 {
     #region Variables
-    public NavMeshAgent agent;
+    [SerializeField] NavMeshAgent _agent;
+    public NavMeshAgent agent { get { return _agent; } }
 
     [Space(10)]
 
     [Header("Bool Settings")]
     [HideInInspector] public bool needFood = false;
-    [HideInInspector] public bool isEating = false;
     [HideInInspector] public bool foundFood = false;
     [HideInInspector] public bool isPickingup = false;
     [HideInInspector] public bool isHiding = false;
@@ -47,7 +47,6 @@ public class ChickenBT : BehaviourTree.Tree
 
     [Range(0, 15f)]
     [SerializeField] float minCoverEnemyDistance = 8f;
-
     [Range(0, 50f)]
     [SerializeField] float findCoverRange = 40f;
 
@@ -55,10 +54,8 @@ public class ChickenBT : BehaviourTree.Tree
 
     [Range(0, 15f)]
     [SerializeField] float foodFindRange = 7.5f;
-
     [Range(0, 15f)]
     [SerializeField] float fovRange = 7.5f;
-
     [Range(0, 360f)]
     [SerializeField] float fovAngle = 360f;
 
@@ -66,10 +63,8 @@ public class ChickenBT : BehaviourTree.Tree
 
     [Range(0, 5f)]
     [SerializeField] float wanderTimeMin = 3.5f;
-
     [Range(0, 10f)]
     [SerializeField] float wanderTimeMax = 6.5f;
-
     [Range(0, 15f)]
     [SerializeField] float wanderRange = 5f;
 
@@ -77,7 +72,6 @@ public class ChickenBT : BehaviourTree.Tree
 
     [Range(0, 5f)]
     [SerializeField] float walkSpeed = 2f;
-
     [Range(0, 5f)]
     [SerializeField] float runSpeed = 3.5f;
     #endregion
@@ -87,7 +81,10 @@ public class ChickenBT : BehaviourTree.Tree
         agent.updateRotation = false;
 
         hungerDeathTime = Random.Range(hungerDeathTimeMin, hungerDeathTimeMax);
+    }
 
+    private void OnEnable()
+    {
         EventSystemNew.Subscribe(Event_Type.START_CHICKENS, StartGame);
         EventSystemNew.Subscribe(Event_Type.GAME_LOST, EndGame);
         EventSystemNew.Subscribe(Event_Type.GAME_WON, EndGame);

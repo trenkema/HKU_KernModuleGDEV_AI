@@ -9,8 +9,7 @@ public enum Event_Type
     FRUIT_EATEN,
     GAME_WON,
     GAME_LOST,
-    CHICKEN_DIED,
-    CHICKEN_SUCCESSFULLY_FED
+    CHICKEN_DIED
 }
 
 public static class EventSystemNew

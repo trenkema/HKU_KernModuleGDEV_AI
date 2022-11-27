@@ -1135,9 +1135,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   decision: I
-  agent: {fileID: 3229037221519944331}
+  _agent: {fileID: 3229037221519944331}
   needFood: 1
-  isEating: 0
   foundFood: 0
   isPickingup: 0
   isHiding: 0
@@ -1165,6 +1164,7 @@ MonoBehaviour:
   findCoverRange: 40
   foodFindRange: 5
   fovRange: 2.5
+  fovAngle: 360
   wanderTimeMin: 3.5
   wanderTimeMax: 6.5
   wanderRange: 5
